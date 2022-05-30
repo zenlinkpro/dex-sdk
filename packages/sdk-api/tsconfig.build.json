@@ -1,0 +1,20 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "emitDeclarationOnly": true,
+    "baseUrl": "./",
+    "outDir": "./build",
+    "rootDir": "./src"
+  },
+  "exclude": [
+    "**/checkTypes.manual.ts",
+    "**/*.spec.ts",
+    "**/**.d.ts",
+    "**/test/**/*"
+  ],
+  "references": [
+    { "path": "../sdk-core/tsconfig.build.json" },
+    { "path": "../sdk-router/tsconfig.build.json" },
+
+  ]
+}

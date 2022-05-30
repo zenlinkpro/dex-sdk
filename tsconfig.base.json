@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "downlevelIteration": true, 
+    "composite": true,
+    "emitDeclarationOnly": true,
+    "moduleResolution": "node",
+    "paths": {
+      "@zenlink-dex/sdk-core": ["sdk-core/src"],
+      "@zenlink-dex/sdk-core/*": ["sdk-core/src/*"],
+      "@zenlink-dex/sdk-router": ["sdk-router/src"],
+      "@zenlink-dex/sdk-router/*": ["sdk-router/src/*"],
+      "@zenlink-dex/sdk-api": ["sdk-api/src"],
+      "@zenlink-dex/sdk-api/*": ["sdk-api/src/*"],
+    },
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  }
+ }

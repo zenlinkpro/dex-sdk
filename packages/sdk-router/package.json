@@ -1,0 +1,31 @@
+{
+  "version": "0.0.1",
+  "author": "zenlink",
+  "name": "@zenlink-dex/sdk-router",
+  "types": "./build/index.d.ts",
+  "main": "./build/cjs/index.js",
+  "module": "./build/esm/index.js",
+  "description": "",
+  "exports": {
+    ".": {
+      "import": "./build/esm/index.js",
+      "require": "./build/cjs/index.js",
+      "types": "./build/index.d.ts"  
+    },
+    "./entities": {
+      "import": "./build/esm/entities/index.js",
+      "require": "./build/cjs/entities/index.js",
+      "types": "./build/entities/index.d.ts"  
+    },
+    "./entities/tradeV2": {
+      "import": "./build/esm/entities/tradeV2.js",
+      "require": "./build/cjs/entities/tradeV2.js",
+      "types": "./build/entities/tradeV2.d.ts"
+    }
+  },
+  "license": "ISC",
+  "dependencies": {
+    "@zenlink-dex/sdk-core": "workspace:0.0.1",
+    "jsbi": "^4.2.0"
+  }
+}

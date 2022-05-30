@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "resolveJsonModule": true,
+    "emitDeclarationOnly": true,
+    "esModuleInterop": true,
+  },
+  "files": [],
+  "exclude": [
+    "**/**.d.ts"
+  ],
+  "references": [
+    { "path": "./packages/sdk-core/tsconfig.build.json" },
+    { "path": "./packages/sdk-router/tsconfig.build.json" },
+    { "path": "./packages/sdk-api/tsconfig.build.json" },
+
+  ]
+}

@@ -1,0 +1,4 @@
+tsconfig*buildinfo
+src/
+tsconfig**.json
+.npmignore
