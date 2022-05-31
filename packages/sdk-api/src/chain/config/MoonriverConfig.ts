@@ -11,6 +11,10 @@ export const MoonriverChainConfig: EvmChainOption = {
   rpcUrls: [
     'https://rpc.api.moonriver.moonbeam.network'
   ],
+  stableAddress: [
+    '0x7BDE79AD4ae9023AC771F435A1DC6efdF3F434D1',
+    '0xd38A007F60817635163637411353BB1987209827'
+  ],
   factoryAddress: '0xf36AE63d89983E3aeA8AaaD1086C3280eb01438D',
   initCodeHash: '0x6278f87a17986c7b82be214d6e4cf48101d7a40fe979fa914ed6337de05c76b8',
   multicall2: '0x959b76B30f12C6Ad3F3C59611F5377d44A704208'

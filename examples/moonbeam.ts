@@ -1,113 +1,16 @@
-import { EvmApi } from '@zenlink-dex/sdk-api';
+import { EvmApi, MoonbeamConfig } from '@zenlink-dex/sdk-api';
 import { Percent, Token, TokenAmount, TradeType, StablePair, StableSwap } from '@zenlink-dex/sdk-core';
 import { firstValueFrom } from 'rxjs';
 import { SmartRouterV2 } from '@zenlink-dex/sdk-router';
-
 import { ethers } from 'ethers';
-
-// moonbeam chain config
-const MoonbeamConfigJson = {
-  chainName: 'Moonbeam',
-  networkId: 300,
-  chainId: 2004,
-  dexType: 'evm',
-  ethereumChainId: 1284,
-  wss: ['wss://wss.api.moonbeam.network'],
-  routerAddress: '0x7a3909C7996EFE42d425cD932fc44E3840fCAB71',
-  routerV1Address: '0xeeD18d08B79f5245D1e106CAf0c69a3836A39d16',
-
-  scanBrowserPrefix: 'https://moonbeam.moonscan.io/tx',
-  rpcUrls: [
-    'https://rpc.api.moonbeam.network'
-  ],
-  factoryAddress: '0xF49255205Dfd7933c4D0f25A57D40B1511F92fEF',
-  initCodeHash: '0x7eba2084662eb5b00a4d7e2a74743051dc33bfe07fcbcd724b88b351a7078fda',
-  multicall2: '0x69573274171d435cdd0aa1Bc8709253D67ac0a29'
-};
-
-// moonbeam stable pool contract address
-const MoonbeamStableContractAddress = [
-  '0x435a35Fc175be0ba097A7bF43128C020EC5bb151', // 4pool
-  '0x944Af4Fb58beDBcE86FB533Bd6DDc49C0BcA6793' // mad3pool/4pool
-];
-
-const tokensMeta = [
-  {
-    networkId: 300,
-    chainId: 2004,
-    assetType: 255,
-    assetIndex: 0,
-    symbol: 'WGLMR',
-    decimals: 18,
-    name: 'Wrapped GLMR',
-    address: '0xacc15dc74880c9944775448304b263d191c6077f'
-  },
-  {
-    networkId: 300,
-    chainId: 2004,
-    assetType: 255,
-    assetIndex: 0,
-    symbol: 'ZLK',
-    decimals: 18,
-    name: 'Zenlink Network Token',
-    address: '0x3fd9b6c9a24e09f67b7b706d72864aebb439100c'
-  },
-  {
-    networkId: 300,
-    assetType: 255,
-    assetIndex: 0,
-    chainId: 2004,
-    address: '0xefaeee334f0fd1712f9a8cc375f427d9cdd40d73',
-    decimals: 6,
-    name: 'Tether USD',
-    symbol: 'anyUSDT'
-  },
-  {
-    networkId: 300,
-    chainId: 2004,
-    assetType: 255,
-    assetIndex: 0,
-    symbol: 'anyUSDC',
-    decimals: 6,
-    name: 'USDC Coin',
-    address: '0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b'
-  },
-  {
-    networkId: 300,
-    chainId: 2004,
-    assetType: 255,
-    assetIndex: 0,
-    symbol: 'madUSDC',
-    decimals: 6,
-    name: 'USDC Coin',
-    address: '0x8f552a71efe5eefc207bf75485b356a0b3f01ec9'
-  },
-  {
-    networkId: 300,
-    chainId: 2004,
-    assetType: 255,
-    assetIndex: 0,
-    symbol: 'madUSDT',
-    decimals: 6,
-    name: 'Tether USD',
-    address: '0x8e70cd5b4ff3f62659049e74b6649c6603a0e594'
-  },
-  {
-    networkId: 300,
-    chainId: 2004,
-    assetType: 255,
-    assetIndex: 0,
-    symbol: 'Frax',
-    decimals: 18,
-    name: 'Frax',
-    address: '0x322e86852e492a7ee17f28a78c663da38fb33bfb'
-  }
-];
+import axios from 'axios';
 
 const PRIVITE_KEY = '0x'; // YOUR PRIVITE KEY
 
 async function main () {
-  const provider = new ethers.providers.JsonRpcProvider(MoonbeamConfigJson.rpcUrls[0]);
+  const response = await axios.get('https://raw.githubusercontent.com/zenlinkpro/token-list/main/tokens/moonbeam.json');
+  const tokensMeta = response.data.tokens;
+  const provider = new ethers.providers.JsonRpcProvider(MoonbeamConfig.rpcUrls[0]);
 
   const singer = new ethers.Wallet(
     PRIVITE_KEY,
@@ -132,7 +35,7 @@ async function main () {
   // generate the dex api
   const dexApi = new EvmApi(
     singer,
-    MoonbeamConfigJson
+    MoonbeamConfig
   );
 
   // query the tokens balance of acoount
@@ -148,7 +51,7 @@ async function main () {
   console.log('standardPools', standardPools);
 
   // query the stable pair;
-  const stablePairs: StablePair[] = await firstValueFrom(dexApi.stablePairOf(MoonbeamStableContractAddress));
+  const stablePairs: StablePair[] = await firstValueFrom(dexApi.stablePairOf(MoonbeamConfig.stableAddress));
   console.log('stablePairs', stablePairs);
 
   // query the stable pool of stable pair;

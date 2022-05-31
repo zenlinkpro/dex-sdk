@@ -29,4 +29,5 @@ export interface EvmChainOption extends ChainOptions {
   routerV1Address: string;
   rpcUrls: string[];
   wss?: string[];
+  stableAddress?: string[]
 }

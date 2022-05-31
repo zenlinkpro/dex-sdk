@@ -1,44 +1,15 @@
 import { WsProvider, Keyring } from '@polkadot/api';
-import { ModuleBApi } from '@zenlink-dex/sdk-api';
+import { ModuleBApi, BifrostConfig } from '@zenlink-dex/sdk-api';
+
 import { Percent, Token, TokenAmount } from '@zenlink-dex/sdk-core';
 import { firstValueFrom } from 'rxjs';
 import { SmartRouterV2 } from '@zenlink-dex/sdk-router';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
-
-const tokensMeta = [
-  {
-    networkId: 200,
-    chainId: 2001,
-    assetType: 0,
-    assetIndex: 0,
-    symbol: 'BNC',
-    decimals: 12,
-    name: 'BNC',
-    address: ''
-  },
-  {
-    networkId: 200,
-    chainId: 2001,
-    assetType: 2,
-    assetIndex: 516,
-    symbol: 'KSM',
-    decimals: 12,
-    name: 'KSM',
-    address: ''
-  },
-  {
-    networkId: 200,
-    chainId: 2001,
-    assetType: 2,
-    assetIndex: 770,
-    symbol: 'KUSD',
-    decimals: 12,
-    name: 'KUSD',
-    address: ''
-  }
-];
+import axios from 'axios';
 
 async function main () {
+  const response = await axios.get('https://raw.githubusercontent.com/zenlinkpro/token-list/main/tokens/bifrost.json');
+  const tokensMeta = response.data.tokens;
   await cryptoWaitReady();
 
   // prepare wallet
@@ -60,7 +31,7 @@ async function main () {
   }, tokensMap);
 
   // generate the dex api
-  const provider = new WsProvider('wss://bifrost-parachain.api.onfinality.io/public-ws');
+  const provider = new WsProvider(BifrostConfig.wss[0]);
   const dexApi = new ModuleBApi(
     provider
   );

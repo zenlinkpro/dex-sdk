@@ -21,6 +21,7 @@ importers:
       '@zenlink-dex/sdk-api': workspace:^0.0.1
       '@zenlink-dex/sdk-core': workspace:^0.0.1
       '@zenlink-dex/sdk-router': workspace:^0.0.1
+      axios: ^0.27.2
       babel-jest: ^27.5.1
       big.js: ^6.1.1
       bignumber.js: ^9.0.2
@@ -56,6 +57,7 @@ importers:
       '@zenlink-dex/sdk-api': link:packages/sdk-api
       '@zenlink-dex/sdk-core': link:packages/sdk-core
       '@zenlink-dex/sdk-router': link:packages/sdk-router
+      axios: 0.27.2
       babel-jest: 27.5.1_@babel+core@7.17.9
       big.js: 6.1.1
       bignumber.js: 9.0.2
@@ -83,8 +85,10 @@ importers:
 
   packages/sdk-api:
     specifiers:
+      '@ethersproject/abi': ^5.6.0
       '@ethersproject/address': ^5.6.0
       '@ethersproject/solidity': ^5.6.0
+      '@polkadot/api': ^8.6.1
       '@polkadot/types': ^8.6.1
       '@types/big.js': ^6.1.3
       '@zenlink-dex/sdk-core': workspace:0.0.1
@@ -92,13 +96,16 @@ importers:
       big.js: ^6.1.1
       bignumber.js: ^9.0.2
       decimal.js-light: ^2.5.1
+      ethers: ^5.6.2
       jsbi: ^4.2.0
       lodash: ^4
       tiny-invariant: ^1.2.0
       toformat: ^2.0.0
     dependencies:
+      '@ethersproject/abi': 5.6.0
       '@ethersproject/address': 5.6.0
       '@ethersproject/solidity': 5.6.0
+      '@polkadot/api': 8.6.1
       '@polkadot/types': 8.6.1
       '@types/big.js': 6.1.3
       '@zenlink-dex/sdk-core': link:../sdk-core
@@ -106,6 +113,7 @@ importers:
       big.js: 6.1.1
       bignumber.js: 9.0.2
       decimal.js-light: 2.5.1
+      ethers: 5.6.2
       jsbi: 4.2.0
       lodash: 4.17.21
       tiny-invariant: 1.2.0
@@ -3544,6 +3552,15 @@ packages:
     resolution: {integrity: sha512-xh1Rl34h6Fi1DC2WWKfxUTVqRsNnr6LsKz2+hfwDxQJWmrx8+c7ylaqBMcHfl1U1r2dsifOvKX3LQuLNZ+XSvA==}
     dev: false
 
+  /axios/0.27.2:
+    resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
+    dependencies:
+      follow-redirects: 1.15.1
+      form-data: 4.0.0
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
   /babel-jest/27.5.1_@babel+core@7.17.9:
     resolution: {integrity: sha512-cdQ5dXjGRd0IBRATiQ4mZGlGlRE8kJpjPOixdNRdT+m3UcNqmYWN6rK6nvtXYfY3D76cb8s/O1Ss8ea24PIwcg==}
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
@@ -5496,6 +5513,16 @@ packages:
     deprecated: flatten is deprecated in favor of utility frameworks such as lodash.
     dev: false
 
+  /follow-redirects/1.15.1:
+    resolution: {integrity: sha512-yLAMQs+k0b2m7cVxpS1VKJVvoz7SS9Td1zss3XRwXj+ZDH00RJgnuLx7E44wx02kQLrdM3aOOy+FpzS7+8OizA==}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+    dev: false
+
   /forever-agent/0.6.1:
     resolution: {integrity: sha1-+8cfDEGt6zf5bFd60e1C2P2sypE=}
     dev: false
@@ -5511,6 +5538,15 @@ packages:
 
   /form-data/3.0.1:
     resolution: {integrity: sha512-RHkBKtLWUVwd7SqRIvCZMEvAMoGUp0XU+seQiZejj0COz3RI3hWP4sCv3gZWWLjJTd7rGwcsF5eKZGii0r/hbg==}
+    engines: {node: '>= 6'}
+    dependencies:
+      asynckit: 0.4.0
+      combined-stream: 1.0.8
+      mime-types: 2.1.35
+    dev: false
+
+  /form-data/4.0.0:
+    resolution: {integrity: sha512-ETEklSGi5t0QMZuiXoA/Q6vcnxcLQP5vdugSpuAyi6SVGi2clPPp+xgEhuMaHC+zGgn31Kd235W35f7Hykkaww==}
     engines: {node: '>= 6'}
     dependencies:
       asynckit: 0.4.0

@@ -39,3 +39,5 @@ export interface DexApi {
 
 export * from './ModuleBApi';
 export * from './EvmApi';
+
+export * from './chain';
