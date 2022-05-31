@@ -170,7 +170,7 @@ export class EvmSwapParam implements SwapParamModule {
     const fromToken = path[0];
     const targetToken = path[path.length - 1];
 
-    if (fromToken.assetType === AssetType.NATIVE_TOKEN) {
+    if (fromToken.isNative) {
       method = 'swapNativeCurrencyForExactTokens';
       params = [
         amount.quotient.toString(),
@@ -191,7 +191,7 @@ export class EvmSwapParam implements SwapParamModule {
       };
     }
 
-    if (targetToken.assetType === AssetType.NATIVE_TOKEN) {
+    if (targetToken.isNative) {
       method = 'swapTokensForExactNativeCurrency';
     }
 
@@ -250,7 +250,7 @@ export class EvmSwapParam implements SwapParamModule {
           }
     );
 
-    if (fromToken.assetType === AssetType.NATIVE_TOKEN) {
+    if (fromToken.isNative) {
       method = 'swapExactNativeCurrencyForTokensThroughStablePool';
       params = [
         limitAmount.quotient.toString(),
@@ -271,7 +271,7 @@ export class EvmSwapParam implements SwapParamModule {
       };
     }
 
-    if (targetToken.assetType === AssetType.NATIVE_TOKEN) {
+    if (targetToken.isNative) {
       method = 'swapExactTokensForNativeCurrencyThroughStablePool';
     }
 

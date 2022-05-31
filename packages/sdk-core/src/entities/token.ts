@@ -21,12 +21,14 @@ export interface AssetMeta {
 
 export class Token extends Currency {
   public readonly meta: AssetMeta;
+  public readonly isNative: boolean;
 
-  public constructor (meta: AssetMeta) {
-    const { decimals, name, symbol } = meta;
+  public constructor (meta: AssetMeta, isNative = false) {
+    const { decimals, name, symbol, assetType } = meta;
 
     super(decimals, symbol, name);
     this.meta = meta;
+    this.isNative = isNative || assetType === AssetType.NATIVE_TOKEN;
   }
 
   public get assetId (): string {
@@ -110,7 +112,7 @@ export class Token extends Currency {
       return new Token({
         ...meta,
         assetType: AssetType.EVM_TOKEN
-      });
+      }, true);
     }
 
     return this;

@@ -61,9 +61,11 @@ async function main () {
   const anyUSDCToken = tokensMap['300-2004-255-0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b'];
   const wglmrToken = tokensMap['300-2004-255-0xacc15dc74880c9944775448304b263d191c6077f'];
 
+  // const glmrToken = tokensMap['300-2004-0-0'];
+
   // swap from token -> toToken
   const fromToken = wglmrToken;
-  const fromTokenAmount = new TokenAmount(fromToken, (1_000_000_000_000_000_000).toString());
+  const fromTokenAmount = new TokenAmount(fromToken, (1_0_000_000_000_000_000).toString());
   const toToken = anyUSDCToken;
 
   // use smart router to get the best trade;
