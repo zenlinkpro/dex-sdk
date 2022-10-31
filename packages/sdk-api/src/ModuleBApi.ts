@@ -6,32 +6,91 @@ import { ModuleBStandardPool } from './pool/standard-pool/ModuleBStandardPool';
 
 import { MultiPath, StablePair, StableSwap, StandardPair, StandardPool, Token, TokenAmount, TradeType } from '@zenlink-dex/sdk-core';
 import { WsProvider, ApiPromise } from '@polkadot/api';
-import { DexApi } from './index';
+import { ProviderInterface } from '@polkadot/rpc-provider/types';
+
+import { DexApi, ModuleBChainOption } from './index';
 import { Observable } from 'rxjs';
 import { isEqual } from 'lodash';
 import { u32 } from '@polkadot/types';
 import { SwapParamModule } from './transaction/swap';
 import { ModuleBSwapParam } from './transaction/swap/ModuleBSwap';
 import invariant from 'tiny-invariant';
+import { StablePoolModule } from './pool/stable-pool';
+import { ModuleBStablePool } from './pool/stable-pool/ModuleBStablePool';
+import { types, typesAlias, typesBundle, rpc } from '@bifrost-finance/type-definitions';
+
+export const zenlinkStableAmm = {
+  getVirtualPrice: {
+    description: 'getVirtualPrice',
+    params: [
+      {
+        name: 'pid',
+        type: 'PoolId'
+      },
+      {
+        name: 'at',
+        type: 'Hash',
+        isOptional: true
+      }
+    ],
+    type: 'Balance',
+    isSubscription: false,
+    jsonrpc: 'zenlinkStableAmm_getVirtualPrice',
+    method: 'getVirtualPrice',
+    section: 'zenlinkStableAmm'
+  },
+  getA: {
+    description: 'getA',
+    params: [
+      {
+        name: 'pid',
+        type: 'PoolId'
+      },
+      {
+        name: 'at',
+        type: 'Hash',
+        isOptional: true
+      }
+    ],
+    type: 'Balance',
+    isSubscription: false,
+    jsonrpc: 'zenlinkStableAmm_getA',
+    method: 'getA',
+    section: 'zenlinkStableAmm'
+  }
+};
 
 export class ModuleBApi implements DexApi {
-  public readonly provider: WsProvider;
+  public readonly provider: ProviderInterface;
   public api?: ApiPromise;
   private balanceModule?: BalanceModule;
   private standardPoolModule?: StandardPoolModule;
   private swapParamModule?: SwapParamModule;
+  private stablePoolModule?: StablePoolModule;
+  private options?: ModuleBChainOption;
 
-  public constructor (provider: WsProvider) {
+  public constructor (provider: ProviderInterface, options?: ModuleBChainOption) {
     this.provider = provider;
+    this.options = options;
     this.swapParamModule = new ModuleBSwapParam();
   }
 
   public async initApi () {
-    const api = await ApiPromise.create({ provider: this.provider });
+    const api = await ApiPromise.create({
+      provider: this.provider,
+      rpc: {
+        zenlinkStableAmm,
+        ...rpc
+      },
+      typesBundle,
+      types,
+      typesAlias
+    });
 
     this.api = api;
     this.balanceModule = new ModuleBBalance(api);
     this.standardPoolModule = new ModuleBStandardPool(api);
+    this.stablePoolModule = new ModuleBStablePool(api, this.options);
   }
 
   public async balanceOfToken (token: Token, account: string) {
@@ -242,13 +301,61 @@ export class ModuleBApi implements DexApi {
   stablePairOf (
     address: string[] = []
   ): Observable<StablePair[]> {
-    invariant(false, 'stablePoolModule is not support');
+    return new Observable((subscriber) => {
+      const handleReserveCallback = (block?: u32) => {
+        this.stablePoolModule?.stablePairsOf(address)
+          .then((pairs = []) => {
+            subscriber.next(pairs);
+          });
+      };
+
+      handleReserveCallback();
+
+      let handlePromise: any;
+
+      if (this.api) {
+        handlePromise = this.api.query.system.number(handleReserveCallback);
+      }
+
+      return () => {
+        if (handlePromise) {
+          handlePromise.then((handle: any) => {
+            handle();
+          });
+        }
+      };
+    });
   }
 
   stablePoolOfPairs (
     pairs: StablePair[] = []
   ): Observable<StableSwap[]> {
-    invariant(false, 'stablePoolModule is not support');
+    invariant(this.stablePoolModule, 'stablePoolModule is not support');
+
+    return new Observable((subscriber) => {
+      const handleReserveCallback = (block?: u32) => {
+        this.stablePoolModule?.stablePoolsOf(pairs)
+          .then((pairs = []) => {
+            subscriber.next(pairs);
+          });
+      };
+
+      handleReserveCallback();
+
+      let handlePromise: any;
+
+      if (this.api) {
+        handlePromise = this.api.query.system.number(handleReserveCallback);
+      }
+
+      return () => {
+        if (handlePromise) {
+          handlePromise.then((handle: any) => {
+            handle();
+          });
+        }
+      };
+    });
   }
 
   public swap (
@@ -274,7 +381,7 @@ export class ModuleBApi implements DexApi {
 
     if (!swapParams) return undefined;
 
-    return this.api.tx[swapParams.mod][swapParams.method](...swapParams.params);
+    return this.api.tx[swapParams.mod][swapParams.method](...swapParams.params) as any;
   }
 
   public swapExactTokensForTokens (
@@ -286,7 +393,7 @@ export class ModuleBApi implements DexApi {
   ) {
     invariant(this.swapParamModule && this.api, 'SwapParamModule is not support');
 
-    const swapParams = this.swapParamModule.swapV1Params(
+    const swapParams = this.swapParamModule!.swapV1Params(
       path,
       amount,
       otherlimitAmount,
@@ -296,7 +403,7 @@ export class ModuleBApi implements DexApi {
     );
 
     invariant(swapParams, 'invaild');
-    return this.api.tx[swapParams.mod][swapParams.method](...swapParams.params);
+    return this.api.tx[swapParams!.mod][swapParams!.method](...swapParams!.params) as any;
   }
 
   public swapTokensForExactTokens (
@@ -307,7 +414,7 @@ export class ModuleBApi implements DexApi {
     deadline: number | string
   ) {
     invariant(this.swapParamModule && this.api, 'SwapParamModule is not support');
-    const swapParams = this.swapParamModule.swapV1Params(
+    const swapParams = this.swapParamModule!.swapV1Params(
       path,
       amount,
       otherlimitAmount,
@@ -317,6 +424,6 @@ export class ModuleBApi implements DexApi {
     );
     invariant(swapParams, 'invaild');
 
-    return this.api.tx[swapParams.mod][swapParams.method](...swapParams.params);
+    return this.api.tx[swapParams!.mod][swapParams!.method](...swapParams!.params) as any;
   }
 }

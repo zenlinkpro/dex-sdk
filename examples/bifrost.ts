@@ -1,7 +1,7 @@
 import { WsProvider, Keyring } from '@polkadot/api';
 import { ModuleBApi, BifrostConfig } from '@zenlink-dex/sdk-api';
 
-import { Percent, Token, TokenAmount } from '@zenlink-dex/sdk-core';
+import { Percent, Token, TokenAmount, StablePair, StableSwap } from '@zenlink-dex/sdk-core';
 import { firstValueFrom } from 'rxjs';
 import { SmartRouterV2 } from '@zenlink-dex/sdk-router';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
@@ -33,7 +33,8 @@ async function main () {
   // generate the dex api
   const provider = new WsProvider(BifrostConfig.wss[0]);
   const dexApi = new ModuleBApi(
-    provider
+    provider,
+    BifrostConfig
   );
 
   await provider.isReady;
@@ -53,16 +54,25 @@ async function main () {
   const standardPools: any = await firstValueFrom(dexApi.standardPoolOfPairs(standardPairs));
   console.log('standardPools', standardPools);
 
+  // query the stable pair;
+  const stablePairs: StablePair[] = await firstValueFrom(dexApi.stablePairOf());
+  console.log('stablePairs', stablePairs);
+
+  // query the stable pool of stable pair;
+  const stablePools: StableSwap[] = await firstValueFrom(dexApi.stablePoolOfPairs(stablePairs));
+  console.log('stablePairs', stablePools);
+
   // swap 10 bnc to kusd
   const bncToken = tokensMap['200-2001-0-0'];
   const kusdToken = tokensMap['200-2001-2-770'];
+  const vsKSMToken = tokensMap['200-2001-2-1028'];
   const bncAmount = new TokenAmount(bncToken, (10_000_000_000_000).toString());
   // use smart router to get the best trade;
   const result = SmartRouterV2.swapExactTokensForTokens(
     bncAmount,
-    kusdToken,
+    vsKSMToken,
     standardPools,
-    []
+    stablePools
   );
 
   const trade = result.trade;

@@ -40,7 +40,8 @@ import { ModuleBApi, BifrostConfig } from '@zenlink-dex/sdk-api';
  const provider = new WsProvider(BifrostConfig.wss[0]);
  await provider.isReady;
  const dexApi = new ModuleBApi(
-    provider
+    provider,
+    BifrostConfig
   );
   await dexApi.initApi(); // init the api;
 ```
@@ -70,7 +71,13 @@ import { firstValueFrom } from 'rxjs';
   
   
   // query the stable pair and pool
-  // Bifrost will support stable pool later
+  // query the stable pair;
+  const stablePairs: StablePair[] = await firstValueFrom(dexApi.stablePairOf());
+  console.log('stablePairs', stablePairs);
+
+  // query the stable pool of stable pair;
+  const stablePools: StableSwap[] = await firstValueFrom(dexApi.stablePoolOfPairs());
+  console.log('stablePairs', stablePools);
 ```
 
 
@@ -98,20 +105,20 @@ import { SmartRouterV2 } from '@zenlink-dex/sdk-router';
   }, tokensMap);
   
   const bncToken = tokensMap['200-2001-0-0'];
-  const kusdToken = tokensMap['200-2001-2-770'];
+  const vsKSMToken = tokensMap['200-2001-2-1028'];
   const bncAmount = new TokenAmount(bncToken, (10_000_000_000_000).toString());
 
   // swap fromToken -> toToken
   const fromToken = bncAmount;
   const fromTokenAmount = new TokenAmount(fromToken, (1_000_000_000_000_000).toString());
-  const toToken = kusdToken;
+  const toToken = vsKSMToken;
   
    // use smart router to get the best trade;
   const result = SmartRouterV2.swapExactTokensForTokens(
     fromTokenAmount,
     toToken,
     standardPools,
-    []
+    stablePools
   );
   
   const trade = result.trade;
