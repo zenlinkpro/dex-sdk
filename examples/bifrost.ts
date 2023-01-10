@@ -8,7 +8,7 @@ import { cryptoWaitReady } from '@polkadot/util-crypto';
 import axios from 'axios';
 
 async function main () {
-  const response = await axios.get('https://raw.githubusercontent.com/zenlinkpro/token-list/main/tokens/bifrost.json');
+  const response = await axios.get('https://raw.githubusercontent.com/zenlinkpro/token-list/main/tokens/bifrost-kusama.json');
   const tokensMeta = response.data.tokens;
   await cryptoWaitReady();
 
@@ -62,15 +62,16 @@ async function main () {
   const stablePools: StableSwap[] = await firstValueFrom(dexApi.stablePoolOfPairs(stablePairs));
   console.log('stablePairs', stablePools);
 
-  // swap 10 bnc to kusd
+  // swap 10 bnc to another token
   const bncToken = tokensMap['200-2001-0-0'];
   const kusdToken = tokensMap['200-2001-2-770'];
   const vsKSMToken = tokensMap['200-2001-2-1028'];
+  const usdtToken = tokensMap['200-2001-2-2048'];
   const bncAmount = new TokenAmount(bncToken, (10_000_000_000_000).toString());
   // use smart router to get the best trade;
   const result = SmartRouterV2.swapExactTokensForTokens(
     bncAmount,
-    vsKSMToken,
+    usdtToken,
     standardPools,
     stablePools
   );

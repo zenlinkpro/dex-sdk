@@ -8,7 +8,22 @@ export const currencyKeyMap: Record<number, string> = {
   2: 'Token',
   3: 'Stable',
   4: 'VSToken',
-  5: 'VSBond'
+  5: 'VSBond',
+  6: 'LPToken',
+  7: 'ForeignAsset',
+  8: 'Token2',
+  9: 'VToken2',
+  10: 'VSToken2',
+  11: 'VSBond2',
+  12: 'StableLpToken'
+};
+
+export const TokenIndexMap: Record<number, string> = {
+  7: 'ForeignAsset',
+  8: 'Token2',
+  9: 'VToken2',
+  10: 'VSToken2',
+  12: 'StableLpToken'
 };
 
 export const currencyTokenSymbolMap: Record<number, string> = {
@@ -21,7 +36,8 @@ export const currencyTokenSymbolMap: Record<number, string> = {
   6: 'KAR',
   7: 'ZLK',
   8: 'PHA',
-  9: 'RMRK'
+  9: 'RMRK',
+  10: 'MOVR'
 };
 
 export function parseTokenAssetU8 (assetIndex: number): number {
@@ -36,10 +52,24 @@ export function parseTokenType (assetIndex: number): string {
   return currencyKeyMap[assetU8];
 }
 
-export function parseTokenSymbol (assetIndex: number): string {
+export function parseTokenTypeAndSymbolOrIndex (assetIndex: number) {
+  const assetU8 = ((assetIndex & 0x0000_0000_0000_ff00) >> 8);
+  const tokenType = parseTokenType(assetIndex);
   const assetSymbolIndex = ((assetIndex & 0x0000_0000_0000_000ff));
 
-  return currencyTokenSymbolMap[assetSymbolIndex];
+  if (TokenIndexMap[assetU8]) {
+    return [tokenType, assetSymbolIndex];
+  }
+
+  const tokenSymbol = currencyTokenSymbolMap[assetSymbolIndex];
+
+  return [tokenType, tokenSymbol];
+}
+
+export function parseTokenSymbol (assetIndex: number): string | number {
+  const [, tokenSymbolOrIndex] = parseTokenTypeAndSymbolOrIndex(assetIndex);
+
+  return tokenSymbolOrIndex;
 }
 
 export class ModuleBBalance implements BalanceModule {
